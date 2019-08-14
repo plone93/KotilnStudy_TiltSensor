@@ -1,6 +1,7 @@
 package com.example.tiltsensor
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -8,6 +9,7 @@ import android.hardware.SensorManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -28,7 +30,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         //Log.i : 정보성 로그를 표시
         //Log.v : 모든 로그를 표시
         event?.let {
-            Log.d("MainActivity", "onSensorChanged: x :" + "${event.value[0]}, y : ${event.values[1]}, z : ${event.values[2]}")
+            Log.d("MainActivity", "onSensorChanged: x :" + "${event.values[0]}, y : ${event.values[1]}, z : ${event.values[2]}")
         }
     }
 
@@ -37,6 +39,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //화면이 꺼지지 않게 하기 
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        //화면이 가로모드로 고정되게 하기
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
@@ -45,7 +52,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     override fun onResume() {
         super.onResume()
         sensorManager.registerListener(this,//센서매니저.사용할센서(센서값을 받을 대상)
-            SensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),//센서종류지정(가속도센서)
+            sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),//센서종류지정
             SensorManager.SENSOR_DELAY_NORMAL)//얼마나 자주 받을지, fastest, game normal, ui ,자주 읽으면 배터리 낭비
     }
     
@@ -54,6 +61,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         super.onPause()
         sensorManager.unregisterListener(this) //센서해제
     }
+
 
 
 }
