@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-
     //센서값 읽기, SensorEventListener 오버라이딩
     override fun onSensorChanged(event: SensorEvent?) {
         //센서값이 변경되면 호출됨
@@ -31,21 +30,28 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         //Log.v : 모든 로그를 표시
         event?.let {
             Log.d("MainActivity", "onSensorChanged: x :" + "${event.values[0]}, y : ${event.values[1]}, z : ${event.values[2]}")
+
+            tiltView.onSensorEvent(event) //TiltView에 센서값을 전달합니다
         }
     }
 
     private val sensorManager by lazy {
         getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
+    
+    private lateinit var tiltView: TiltView // 코틀린 문법 lateinit var = 늦은 초기화, 나중에 호출해서 쓸때 초기화(변수 값 선언) 해서 씀
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //화면이 꺼지지 않게 하기 
+        //화면이 꺼지지 않게 하기
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         //화면이 가로모드로 고정되게 하기
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        
+        tiltView = TiltView(this) // 생성자에 this를 넘겨서 초기화
+        setContentView(tiltView) // 기존의 R.layout.activity_main 대신에 tiltView를 setContentView 메서드에 전달,  tiltView가 전체레이아웃이 됨
     }
     
     //센서등록
